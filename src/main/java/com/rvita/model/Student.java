@@ -9,6 +9,7 @@ import javax.persistence.ManyToOne;
 
 @Entity // This tells Hibernate to make a table out of this class
 public class Student {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
