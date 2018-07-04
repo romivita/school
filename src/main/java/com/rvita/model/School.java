@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+
 @Entity // This tells Hibernate to make a table out of this class
 public class School {
 
@@ -16,11 +18,11 @@ public class School {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Long id;
 	private String name;
+	@JsonManagedReference
 	@OneToMany(mappedBy = "school")
 	public Set<Student> students = new HashSet<>();
 
-	public School() {
-	}
+	public School() {}
 
 	public School(String name) {
 		this.name = name;

@@ -1,8 +1,7 @@
-C:\Users\Romi\workspace-sts-3.9.4.RELEASE\gs-accessing-data-mysql-complete\src\main\java\com\rvita\repository\StudentRepository.java
-C:\Users\Romi\workspace-sts-3.9.4.RELEASE\gs-accessing-data-mysql-complete\src\main\java\com\rvita\model\School.java
-C:\Users\Romi\workspace-sts-3.9.4.RELEASE\gs-accessing-data-mysql-complete\src\main\java\com\rvita\model\Student.java
-C:\Users\Romi\workspace-sts-3.9.4.RELEASE\gs-accessing-data-mysql-complete\src\main\java\com\rvita\repository\SchoolRepository.java
-C:\Users\Romi\workspace-sts-3.9.4.RELEASE\gs-accessing-data-mysql-complete\src\main\java\com\rvita\controller\MainController.java
-C:\Users\Romi\workspace-sts-3.9.4.RELEASE\gs-accessing-data-mysql-complete\src\main\java\com\rvita\Application.java
-C:\Users\Romi\workspace-sts-3.9.4.RELEASE\gs-accessing-data-mysql-complete\src\main\java\com\rvita\repository\UserRepository.java
-C:\Users\Romi\workspace-sts-3.9.4.RELEASE\gs-accessing-data-mysql-complete\src\main\java\com\rvita\model\User.java
+C:\Users\rvita\git\school\src\main\java\com\rvita\repository\StudentRepository.java
+C:\Users\rvita\git\school\src\main\java\com\rvita\model\School.java
+C:\Users\rvita\git\school\src\main\java\com\rvita\controller\StudentRestController.java
+C:\Users\rvita\git\school\src\main\java\com\rvita\repository\SchoolRepository.java
+C:\Users\rvita\git\school\src\main\java\com\rvita\Application.java
+C:\Users\rvita\git\school\src\main\java\com\rvita\model\Student.java
+C:\Users\rvita\git\school\src\main\java\com\rvita\controller\SchoolRestController.java

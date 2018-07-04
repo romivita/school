@@ -7,6 +7,8 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+
 @Entity // This tells Hibernate to make a table out of this class
 public class Student {
 
@@ -16,12 +18,17 @@ public class Student {
 	private Long du;
 	private String firstName;
 	private String lastName;
+	@JsonBackReference
 	@ManyToOne
 	private School school;
 
-	public Student() {
-	}
+	public Student() {}
 
+	public Student(Long du, String firstName, String lastName) {
+        this.du = du;        
+		this.firstName = firstName;
+        this.lastName = lastName;
+    }
 	public Long getId() {
 		return id;
 	}

@@ -1,8 +1,5 @@
-com\rvita\repository\UserRepository.class
 com\rvita\Application.class
 com\rvita\model\Student.class
 com\rvita\repository\StudentRepository.class
 com\rvita\model\School.class
 com\rvita\repository\SchoolRepository.class
-com\rvita\model\User.class
-com\rvita\controller\MainController.class
