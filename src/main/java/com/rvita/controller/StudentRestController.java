@@ -3,6 +3,7 @@ package com.rvita.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,11 +14,13 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.rvita.model.School;
 import com.rvita.model.Student;
 import com.rvita.repository.StudentRepository;
 
+import javassist.NotFoundException;
 import javassist.tools.web.BadHttpRequest;
 
 @RestController
@@ -30,13 +33,17 @@ public class StudentRestController {
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<Student> findAll() {
 		// This returns a JSON or XML with the students
-		return studentRepository.findAll();
+		return studentRepository.findAllByOrderByIdAsc();
 	}
 
 	@GetMapping(path = "/{id}")
-	public Student findById(@PathVariable long id) {
-		Optional<Student> student = studentRepository.findById(id);
-		return student.get();
+	public Student findById(@PathVariable long id) throws ResponseStatusException {
+		if (studentRepository.existsById(id)) {
+			Optional<Student> student = studentRepository.findById(id);
+			return student.get();
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student Not Found");
+		}
 	}
 
 	@PostMapping(path = "/add") // Map ONLY GET Requests
@@ -55,12 +62,12 @@ public class StudentRestController {
 	}
 
 	@PutMapping(path = "/{id}")
-	public Student update(@PathVariable long id, @RequestBody Student student) throws BadHttpRequest {
+	public Student update(@PathVariable long id, @RequestBody Student student) throws ResponseStatusException {
 		if (studentRepository.existsById(id)) {
 			student.setId(id);
 			return studentRepository.save(student);
 		} else {
-			throw new BadHttpRequest();
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student Not Found");
 		}
 	}
 

@@ -22,13 +22,15 @@ public class Student {
 	@ManyToOne
 	private School school;
 
-	public Student() {}
+	public Student() {
+	}
 
 	public Student(Long du, String firstName, String lastName) {
-        this.du = du;        
+		this.du = du;
 		this.firstName = firstName;
-        this.lastName = lastName;
-    }
+		this.lastName = lastName;
+	}
+
 	public Long getId() {
 		return id;
 	}

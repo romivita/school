@@ -3,6 +3,7 @@ package com.rvita.controller;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -13,10 +14,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.server.ResponseStatusException;
 
 import com.rvita.model.School;
 import com.rvita.repository.SchoolRepository;
 
+import javassist.NotFoundException;
 import javassist.tools.web.BadHttpRequest;
 
 @RestController
@@ -29,13 +32,17 @@ public class SchoolRestController {
 	@GetMapping(path = "/all")
 	public @ResponseBody Iterable<School> findAll() {
 		// This returns a JSON or XML with the schools
-		return schoolRepository.findAll();
+		return schoolRepository.findAllByOrderByIdAsc();
 	}
 
 	@GetMapping(path = "/{id}")
-	public School findById(@PathVariable long id) {
-		Optional<School> student = schoolRepository.findById(id);
-		return student.get();
+	public School findById(@PathVariable long id) throws ResponseStatusException {
+		if (schoolRepository.existsById(id)) {
+			Optional<School> student = schoolRepository.findById(id);
+			return student.get();
+		} else {
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "School Not Found");
+		}
 	}
 
 	@PostMapping(path = "/add")
@@ -46,12 +53,12 @@ public class SchoolRestController {
 	}
 
 	@PutMapping(path = "/{id}")
-	public School update(@PathVariable long id, @RequestBody School school) throws BadHttpRequest {
+	public School update(@PathVariable long id, @RequestBody School school) throws ResponseStatusException {
 		if (schoolRepository.existsById(id)) {
 			school.setId(id);
 			return schoolRepository.save(school);
 		} else {
-			throw new BadHttpRequest();
+			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "School Not Found");
 		}
 	}
 

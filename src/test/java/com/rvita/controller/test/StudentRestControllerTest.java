@@ -38,98 +38,91 @@ import com.rvita.repository.StudentRepository;
 @WebAppConfiguration
 public class StudentRestControllerTest {
 
+	private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
+			MediaType.APPLICATION_JSON.getSubtype(), Charset.forName("utf8"));
 
-    private MediaType contentType = new MediaType(MediaType.APPLICATION_JSON.getType(),
-            MediaType.APPLICATION_JSON.getSubtype(),
-            Charset.forName("utf8"));
+	private MockMvc mockMvc;
 
-    private MockMvc mockMvc;
+	private String name = "EscuelaTest";
 
-    private String name = "EscuelaTest";
+	private HttpMessageConverter mappingJackson2HttpMessageConverter;
 
-    private HttpMessageConverter mappingJackson2HttpMessageConverter;
+	private School school;
 
-    private School school;
+	private List<Student> studentList = new ArrayList<>();
 
-    private List<Student> studentList = new ArrayList<>();
+	@Autowired
+	private StudentRepository studentRepository;
 
-    @Autowired
-    private StudentRepository studentRepository;
+	@Autowired
+	private WebApplicationContext webApplicationContext;
 
-    @Autowired
-    private WebApplicationContext webApplicationContext;
+	@Autowired
+	private SchoolRepository schoolRepository;
 
-    @Autowired
-    private SchoolRepository schoolRepository;
+	@Autowired
+	void setConverters(HttpMessageConverter<?>[] converters) {
 
-    @Autowired
-    void setConverters(HttpMessageConverter<?>[] converters) {
+		this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
+				.filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter).findAny().orElse(null);
 
-        this.mappingJackson2HttpMessageConverter = Arrays.asList(converters).stream()
-            .filter(hmc -> hmc instanceof MappingJackson2HttpMessageConverter)
-            .findAny()
-            .orElse(null);
+		assertNotNull("the JSON message converter must not be null", this.mappingJackson2HttpMessageConverter);
+	}
 
-        assertNotNull("the JSON message converter must not be null",
-                this.mappingJackson2HttpMessageConverter);
-    }
+	@Before
+	public void setup() throws Exception {
+		this.mockMvc = webAppContextSetup(webApplicationContext).build();
 
-    @Before
-    public void setup() throws Exception {
-        this.mockMvc = webAppContextSetup(webApplicationContext).build();
+		this.studentRepository.deleteAllInBatch();
+		this.schoolRepository.deleteAllInBatch();
 
-        this.studentRepository.deleteAllInBatch();
-        this.schoolRepository.deleteAllInBatch();
+		this.school = schoolRepository.save(new School(name));
+		this.studentList.add(studentRepository.save(new Student((long) 34567890, "John", "Doe")));
+		this.studentList.add(studentRepository.save(new Student((long) 33444555, "John", "Dos")));
+	}
 
-        this.school = schoolRepository.save(new School(name));
-        this.studentList.add(studentRepository.save(new Student((long) 34567890, "John", "Doe")));
-        this.studentList.add(studentRepository.save(new Student((long) 33444555, "John", "Dos")));
-    }
+	@Test
+	public void studentNotFound() throws Exception {
+		mockMvc.perform(get("/student/2").content(this.json(new Student(null, null, null))).contentType(contentType))
+				.andDo(print()).andExpect(status().isNotFound());
+	}
 
-    @Test
-    public void userNotFound() throws Exception {
-        mockMvc.perform(post("/george/students/")
-                .content(this.json(new Student(null, null, null)))
-                .contentType(contentType))
-                .andExpect(status().isNotFound());
-    }
+	@Test
+	public void readSingleStudent() throws Exception {
+		mockMvc.perform(get("/student/" + this.studentList.get(0).getId())).andDo(print()).andExpect(status().isOk())
+				.andExpect(content().contentType(contentType))
+				.andExpect(jsonPath("$.id", is(this.studentList.get(0).getId().intValue())))
+				.andExpect(jsonPath("$.du", is(this.studentList.get(0).getDu().intValue())))
+				.andExpect(jsonPath("$.firstName", is(this.studentList.get(0).getFirstName().toString())))
+				.andExpect(jsonPath("$.lastName", is(this.studentList.get(0).getLastName().toString())));
 
-    @Test
-    public void readSingleStudent() throws Exception {
-        mockMvc.perform(get("/students/" + name + "/" + this.studentList.get(0).getId()))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$.id", is(this.studentList.get(0).getId().intValue())))
-                .andExpect(jsonPath("$.name", is(name)));
-    }
+	}
 
-    @Test
-    public void readStudents() throws Exception {
-        mockMvc.perform(get("/students/" + name))
-                .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(contentType))
-                .andExpect(jsonPath("$", hasSize(2)))
-                .andExpect(jsonPath("$[0].id", is(this.studentList.get(0).getId().intValue())))
-                .andExpect(jsonPath("$[0].name", is("http://student.com/1/" + name)))
-                .andExpect(jsonPath("$[1].id", is(this.studentList.get(1).getId().intValue())))
-                .andExpect(jsonPath("$[1].name", is("http://student.com/2/" + name)));
-    }
+	@Test
+	public void readStudents() throws Exception {
+		mockMvc.perform(get("/student/all")).andDo(print()).andExpect(status().isOk())
+				.andExpect(content().contentType(contentType)).andExpect(jsonPath("$", hasSize(2)))
+				.andExpect(jsonPath("$[0].id", is(this.studentList.get(0).getId().intValue())))
+				.andExpect(jsonPath("$[0].du", is(this.studentList.get(0).getDu().intValue())))
+				.andExpect(jsonPath("$[0].firstName", is(this.studentList.get(0).getFirstName().toString())))
+				.andExpect(jsonPath("$[0].lastName", is(this.studentList.get(0).getLastName().toString())))
+				.andExpect(jsonPath("$[1].id", is(this.studentList.get(1).getId().intValue())))
+				.andExpect(jsonPath("$[1].du", is(this.studentList.get(1).getDu().intValue())))
+				.andExpect(jsonPath("$[1].firstName", is(this.studentList.get(1).getFirstName().toString())))
+				.andExpect(jsonPath("$[1].lastName", is(this.studentList.get(1).getLastName().toString())));
+	}
 
-    @Test
-    public void createStudent() throws Exception {
-        String studentJson = json(new Student((long) 34567890, "John", "Doe"));
+	@Test
+	public void createStudent() throws Exception {
+		String studentJson = json(new Student((long) 34567890, "John", "Doe"));
 
-        this.mockMvc.perform(post("/students/" + name)
-                .contentType(contentType)
-                .content(studentJson))
-                .andExpect(status().isCreated());
-    }
+		this.mockMvc.perform(post("/student/add?du=32654987&firstName=Test&lastName=Test&school=1")
+				.contentType(contentType).content(studentJson)).andDo(print()).andExpect(status().isOk());
+	}
 
-    protected String json(Object o) throws IOException {
-        MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
-        this.mappingJackson2HttpMessageConverter.write(
-                o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
-        return mockHttpOutputMessage.getBodyAsString();
-    }
+	protected String json(Object o) throws IOException {
+		MockHttpOutputMessage mockHttpOutputMessage = new MockHttpOutputMessage();
+		this.mappingJackson2HttpMessageConverter.write(o, MediaType.APPLICATION_JSON, mockHttpOutputMessage);
+		return mockHttpOutputMessage.getBodyAsString();
+	}
 }

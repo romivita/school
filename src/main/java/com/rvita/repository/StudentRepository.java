@@ -10,4 +10,6 @@ import com.rvita.model.Student;
 
 public interface StudentRepository extends JpaRepository<Student, Long> {
 
+	Iterable<Student> findAllByOrderByIdAsc();
+
 }
