@@ -65,6 +65,7 @@ public class StudentRestController {
 	public Student update(@PathVariable long id, @RequestBody Student student) throws ResponseStatusException {
 		if (studentRepository.existsById(id)) {
 			student.setId(id);
+			
 			return studentRepository.save(student);
 		} else {
 			throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Student Not Found");

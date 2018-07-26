@@ -82,13 +82,13 @@ public class StudentRestControllerTest {
 	}
 
 	@Test
-	public void studentNotFound() throws Exception {
+	public void Given_UserIsNotCreated_When_InvalidStudentIdIsUsedTo_Then_StudentNotFoundWillBeReturned() throws Exception {
 		mockMvc.perform(get("/student/2").content(this.json(new Student(null, null, null))).contentType(contentType))
 				.andDo(print()).andExpect(status().isNotFound());
 	}
 
 	@Test
-	public void readSingleStudent() throws Exception {
+	public void Given_UserIsCreated_When_ValidStudentIdIsUsedTo_Then_UserWillBeReturned() throws Exception {
 		mockMvc.perform(get("/student/" + this.studentList.get(0).getId())).andDo(print()).andExpect(status().isOk())
 				.andExpect(content().contentType(contentType))
 				.andExpect(jsonPath("$.id", is(this.studentList.get(0).getId().intValue())))
@@ -99,7 +99,7 @@ public class StudentRestControllerTest {
 	}
 
 	@Test
-	public void readStudents() throws Exception {
+	public void Given_UsersAreCreated_When_All_Then_AllUsersWillBeReturned() throws Exception {
 		mockMvc.perform(get("/student/all")).andDo(print()).andExpect(status().isOk())
 				.andExpect(content().contentType(contentType)).andExpect(jsonPath("$", hasSize(2)))
 				.andExpect(jsonPath("$[0].id", is(this.studentList.get(0).getId().intValue())))
@@ -113,7 +113,7 @@ public class StudentRestControllerTest {
 	}
 
 	@Test
-	public void createStudent() throws Exception {
+	public void Given_NewUser_When_AllValidPArametersAreSent_Then_NewUserWillBeReturned() throws Exception {
 		String studentJson = json(new Student((long) 34567890, "John", "Doe"));
 
 		this.mockMvc.perform(post("/student/add?du=32654987&firstName=Test&lastName=Test&school=1")
